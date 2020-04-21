@@ -16,6 +16,7 @@ extern "C" {
 #elif
 #  define MESSAGE_PARAM_LEN (MESSAGE_LEN - MESSAGE_MIN_LEN)
 #endif  // MESSAGE_LEN
+#define GPS_NUM ((int)(MESSAGE_PARAM_LEN / 8))
 
 // 报文枚举
 enum MCategory
@@ -30,9 +31,10 @@ enum MCommand {
 	salvage,
 	beep,
 	auto_return,	// usv-host
-	auto_advoid,
+	auto_avoid,
 	go_dest,
 	cruise,
+	hover,
 	// return
 	succeed,
 	failure,
@@ -79,14 +81,38 @@ struct Ultrasonic
     int right;
 };
 
-int msg_parsing(char *buf, int buf_len, int *msg_start, int *msg_length);
-int msg_extract(char *buf, int msg_length, struct Message *msg);
+/* 解析报文 */
+int msg_parsing(const char *buf, int buf_len, int *msg_start, int *msg_length);
+int msg_extract(const char *buf, int msg_length, struct Message *msg);
 
-void msg_speed_construct(char *buf, uint16_t destination
-		, int8_t lspeed, int8_t rspeed);
+/* 构造报文-获取报文信息 */
+/* speed */
+unsigned msg_speed_construct(char *buf, uint16_t destination,
+		int8_t lspeed, int8_t rspeed);
 int msg_speed_get(struct Message *msg, int *lspeed, int *rspeed);
-void msg_beep_construct(char *buf, uint16_t destination, int8_t beep);
+/* beep */
+unsigned msg_beep_construct(char *buf, uint16_t destination, int8_t beep);
 int msg_beep_get(struct Message *msg, int *beep);
+/* salvage */
+unsigned msg_salvage_construct(char *buf, uint16_t destination);
+/* auto_return */
+unsigned msg_return_construct(char *buf, uint16_t destination,
+		uint8_t status);
+int msg_return_get(struct Message *msg, int *status);
+/* auto_avoid */
+unsigned msg_avoid_construct(char *buf, uint16_t destination, uint8_t status);
+int msg_avoid_get(struct Message *msg, int *status);
+/* go_dest */
+unsigned msg_go_dest_construct(char *buf, uint16_t destination,
+		float latitude, float longtitude);
+int msg_go_dest_get(struct Message *msg,
+		float *latitude, float *longtitude);
+/* cruise */
+unsigned msg_cruise_construct(char *buf,
+		int destination, int gps_num, struct GPS gps[]);
+int msg_cruise_get(struct Message *msg, int *gps_num, struct GPS gps[]);
+/* hover */
+unsigned msg_hover_construct(char *buf, int destination);
 
 #ifdef __cplusplus
 }

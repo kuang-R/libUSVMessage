@@ -45,18 +45,15 @@ static void self()
 		msg_speed_construct(buf+i, 1, j, k);
 
 		x = 0;
-		while ((res = msg_parsing(buf+x+i, MESSAGE_LEN-x, &start, &len)) != 0)
-			if (res > 0) {
-				if (msg_extract(buf+x+i, len, &msg) == 0) {
-					msg_speed_get(&msg, &param1, &param2);
-					assert(param1 == j);
-					assert(param2 == k);
-					break;
-				}
-				k += res;
+		while ((res = msg_parsing(buf+x, MESSAGE_LEN-x, &start, &len)) != 0) {
+			if (res > 0 && msg_extract(buf+x+start, len, &msg) == 0) {
+				msg_speed_get(&msg, &param1, &param2);
+				assert(param1 == j);
+				assert(param2 == k);
+				break;
 			}
-			else
-				k -= res;
+			x += (res > 0) ? res : -res;
+		}
 	}
 	printf("Speed self test pass.\n");
 
@@ -67,17 +64,131 @@ static void self()
 		msg_beep_construct(buf+i, 1, j);
 
 		x = 0;
-		while ((res = msg_parsing(buf+x+i, MESSAGE_LEN-x, &start, &len)) != 0) {
-			if (msg_extract(buf+x+i, len, &msg) == 0) {
+		while ((res = msg_parsing(buf+x, MESSAGE_LEN-x, &start, &len)) != 0) {
+			if (res > 0 && msg_extract(buf+x+start, len, &msg) == 0) {
 				msg_beep_get(&msg, &param1);
 				assert(param1 == j);
 				break;
 			}
-			k += (res > 0) ? res : -res;
+			x += (res > 0) ? res : -res;
 		}
 	}
 	printf("Beep self test pass.\n");
 
+	/* salvage */
+	printf("Salvage self test start.\n");
+	for (i = 0; i < 30; i++) {
+		msg_salvage_construct(buf+i, 0);
+
+		x = 0;
+		int flag = 0;
+		while ((res = msg_parsing(buf+x, MESSAGE_LEN-x, &start, &len)) != 0) {
+			if (res > 0 && msg_extract(buf+i+x, len, &msg) == 0)
+				flag = 1;
+			x += (res > 0) ? res : -res;
+		}
+		assert(flag);
+	}
+	printf("Salvage self test pass.\n");
+
+	/* auto_return */
+	printf("Auto return self test start.\n");
+	for (i = 0; i < 30; i++)
+	for (j = 0; j < 2; j++) {
+		msg_return_construct(buf+i, 2, j);
+
+		x = 0;
+		while ((res = msg_parsing(buf+x, MESSAGE_LEN-x, &start, &len)) != 0) {
+			if (res > 0 && msg_extract(buf+x+start, len, &msg) == 0) {
+				msg_return_get(&msg, &param1);
+				assert(param1 == j);
+				break;
+			}
+			x += (res > 0) ? res : -res;
+		}
+	}
+	printf("Auto return self test pass.\n");
+
+	/* auto_avoid */
+	printf("Auto avoid self test start.\n");
+	for (i = 0; i < 30; i++)
+	for (j = 0; j < 2; j++) {
+		msg_avoid_construct(buf+i, 2, j);
+
+		x = 0;
+		while ((res = msg_parsing(buf+x, MESSAGE_LEN-x, &start, &len)) != 0) {
+			if (res > 0 && msg_extract(buf+x+start, len, &msg) == 0) {
+				msg_avoid_get(&msg, &param1);
+				assert(param1 == j);
+				break;
+			}
+			x += (res > 0) ? res : -res;
+		}
+	}
+	printf("Auto avoid self test pass.\n");
+
+	struct GPS gps[GPS_NUM];
+	float jj, kk;
+	/* go_dest */
+	printf("Go dest self test start.\n");
+	for (i = 0; i < 30; i++)
+	for (jj = 0; jj < 50; jj += 0.3)
+	for (kk = 50; kk < 100; kk += 0.3) {
+		msg_go_dest_construct(buf+i, 1, jj, kk);
+
+		x = 0;
+		while ((res = msg_parsing(buf+x, MESSAGE_LEN-x, &start, &len)) != 0) {
+			if (res > 0 && msg_extract(buf+x+start, len, &msg) == 0) {
+				msg_go_dest_get(&msg, &gps[0].latitude, &gps[0].longtitude);
+				assert(gps[0].latitude - jj < 0.000001);
+				assert(gps[0].longtitude - kk < 0x000001);
+				break;
+			}
+			x += (res > 0) ? res : -res;
+		}
+	}
+	printf("Go dest self test pass.\n");
+
+	/* cruise */
+	printf("Cruise self test start.\n");
+	for (i = 0; i < 5; i++)
+	for (j = 0; j < GPS_NUM; j++)
+	for (jj = 0; jj < 50; jj += 0.3)
+	for (kk = 50; kk < 100; kk += 0.3) {
+		gps[0].latitude = jj;
+		gps[0].longtitude = kk;
+		msg_cruise_construct(buf+i, 1, j, gps);
+
+		x = 0;
+		int z;
+		while ((res = msg_parsing(buf+x, MESSAGE_LEN-x, &start, &len)) != 0) {
+			if (res > 0 && msg_extract(buf+x+start, len, &msg) == 0) {
+				msg_cruise_get(&msg, &k, gps);
+				assert(k == j);
+				assert(gps[0].latitude - jj < 0.000001);
+				assert(gps[0].longtitude - kk < 0.000001);
+				break;
+			}
+			x += (res > 0) ? res : -res;
+		}
+	}
+	printf("Cruise self test pass.\n");
+
+	/* hover */
+	printf("Hover self test start.\n");
+	for (i = 0; i < 30; i++) {
+		msg_hover_construct(buf+i, 1);
+		
+		x = 0;
+		int flag = 0;
+		while ((res = msg_parsing(buf+x, MESSAGE_LEN-x, &start, &len)) != 0) {
+			if (res > 0 && msg_extract(buf+x+start, len, &msg) == 0)
+				flag = 1;
+			x += (res > 0) ? res : -res;
+		}
+		assert(flag);
+	}
+	printf("Hover self test pass.\n");
 }
 
 /* 压力测试 */

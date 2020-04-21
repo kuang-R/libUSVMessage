@@ -3,7 +3,7 @@
 #include "msg_type.h"
 #include "checksum.h"
 
-static char *msg_search(char *buf, int ch, int buf_len);
+static char *msg_search(const char *buf, int ch, int buf_len);
 
 /* 判断有没有报文在缓冲区内
  * msg_start 报文开始位置
@@ -11,7 +11,7 @@ static char *msg_search(char *buf, int ch, int buf_len);
  * 0与负数表示没有报文，正数表示有报文
  * 返回值绝对值为出队列字节数 
  */
-int msg_parsing(char *buf, int buf_len, int *msg_start, int *msg_length)
+int msg_parsing(const char *buf, int buf_len, int *msg_start, int *msg_length)
 {
 	/* 分别表示头位置，长度位置，S字符位置，D字符位置 */
 	char *Hpos, *Lpos, *Spos, *Dpos;
@@ -52,7 +52,7 @@ int msg_parsing(char *buf, int buf_len, int *msg_start, int *msg_length)
 /* 提取报文
  * 成功返回0,crc检查失败返回-1
  */
-int msg_extract(char *buf, int msg_length, struct Message *msg)
+int msg_extract(const char *buf, int msg_length, struct Message *msg)
 {
 	int i;
 	uint16_t real_crc;
@@ -77,7 +77,7 @@ int msg_extract(char *buf, int msg_length, struct Message *msg)
 	return 0;
 }
 
-static char *msg_search(char *buf, int ch, int buf_len)
+static char *msg_search(const char *buf, int ch, int buf_len)
 {
 	int i;
 
