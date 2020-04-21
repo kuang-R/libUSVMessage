@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "msg_type.h"
-#include "crc16.h"
+#include "checksum.h"
 
 static char *msg_search(char *buf, int ch, int buf_len);
 
@@ -59,7 +59,7 @@ int msg_extract(char *buf, int msg_length, struct Message *msg)
 
 	/* check crc */
 	msg->crc = *(uint16_t *)(buf + msg_length-3);
-	real_crc = get_crc(buf, msg_length-3);
+	real_crc = crc_16(buf, msg_length-3);
 	if (real_crc != msg->crc) {
 		return -1;
 	}

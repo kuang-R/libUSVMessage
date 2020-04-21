@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include "msg_type.h"
-#include "crc16.h"
+#include "checksum.h"
 
 static uint32_t serial = 0;
 static void msg_other_construct(char *buf, struct Message *msg);
@@ -73,7 +73,7 @@ static void msg_other_construct(char *buf, struct Message *msg)
 	for (i = 0; i < msg->length-MESSAGE_MIN_LEN; i++)
 		buf[16+i] = msg->param[i];
 
-	msg->crc = get_crc(buf, msg->length-3);
+	msg->crc = crc_16(buf, msg->length-3);
 	*(uint16_t *)(buf+(msg->length-MESSAGE_MIN_LEN+16)) = msg->crc;
 	buf[msg->length-1] = 0xFF;
 }
