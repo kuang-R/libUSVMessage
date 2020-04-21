@@ -56,7 +56,7 @@ while ((res = msg_parsing(buf+pos, BUF_SIZE-pos, &start, &len)) != 0) {
 #### 信息提取
 函数名规律为msg_xxx_get。第一个参数传入提取出的Message，接下来的参数传入信息。
 
-返回0表示成功哦能提取，-1表示提取失败。
+返回0表示提取成功，-1表示提取失败。
 ``` C
 int msg_speed_get(struct Message *msg, int *lspeed, int *rspeed);
 int msg_beep_get(struct Message *msg, int *beep);
@@ -67,4 +67,4 @@ int msg_cruise_get(struct Message *msg, int *gps_num, struct GPS gps[]);
 ```
 ### crc16
 使用压力测试，每1000次对21字节长的报文一个字节进行随机替换（非原字符）。
-crc通过数为200，错误率为80%。
+crc通过数为300，检验率为70%。
