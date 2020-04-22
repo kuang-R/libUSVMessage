@@ -25,14 +25,14 @@ unsigned msg_salvage_construct(char *buf, uint16_t destination);
 unsigned msg_return_construct(char *buf, uint16_t destination,uint8_t status);
 unsigned msg_avoid_construct(char *buf, uint16_t destination, uint8_t status);
 unsigned msg_go_dest_construct(char *buf, uint16_t destination,float latitude, float longtitude);
-unsigned msg_cruise_construct(char *buf,int destination, int gps_num, struct GPS gps[]);
-unsigned msg_hover_construct(char *buf, int destination);
+unsigned msg_cruise_construct(char *buf, uint16_t destination, int gps_num, struct GPS gps[]);
+unsigned msg_hover_construct(char *buf, uint16_t destination);
 
-unsigned msg_return_construct(char *buf, int destination, struct Message *get_msg);
+unsigned msg_rtn_construct(char *buf, uint16_t destination, enum MCommand command, struct Message *get_msg);
 
-unsigned msg_gps_construct(char *buf, int destination, struct GPS gps);
-unsigned msg_imu_construct(char *buf, int destination, struct IMU imu);
-unsigned msg_ultrasonic_construct(char *buf, int destination, struct Ultrasonic ultra);
+unsigned msg_gps_construct(char *buf, uint16_t destination, struct GPS gps);
+unsigned msg_imu_construct(char *buf, uint16_t destination, struct IMU imu);
+unsigned msg_ultrasonic_construct(char *buf, uint16_t destination,struct Ultrasonic ultra);
 unsigned msg_battery_construct(char *buf, uint16_t destination, float battery);
 ```
 ### 解析报文接口
@@ -72,7 +72,7 @@ int msg_avoid_get(struct Message *msg, int *status);
 int msg_go_dest_get(struct Message *msg,float *latitude, float *longtitude);
 int msg_cruise_get(struct Message *msg, int *gps_num, struct GPS gps[]);
 
-int msg_return_get(struct Message *msg, struct MCategory *category, struct MCommand *command);
+int msg_rtn_get(struct Message *msg, enum MCategory *category, enum MCommand *command);
 
 int msg_gps_get(struct Message *msg, struct GPS *gps);
 int msg_imu_get(struct Message *msg, struct IMU *imu);
