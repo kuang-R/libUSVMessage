@@ -334,33 +334,30 @@ static void pressure()
 	struct Message msg;
 	int start, len;
 	int crc_check = 0;
+	int res;
 
 	printf("Start parsing test.\n");
-	for (i = 0; i < 50; i++)
-		/* Bad parsing test */
-		for (j = i; j < i+20; j++) {
-			msg_speed_construct(buf+i, 1, 0, 100);
-			while ((t = (char)rand()) == buf[j])
-				;
-			buf[j] = t;
+	for (i = 0; i < 10000; i++) {
+		j = (rand() % 50) + 1;
+		k = (rand() % 21);
 
-			k = 0;
-			while ((t = msg_parsing(buf+k, MESSAGE_LEN-k, &start, &len)) != 0) {
-				if (t > 0)
-					break;
-				else
-					k -= t;
-			}
+		msg_speed_construct(buf+j, 1, rand() % 101, rand() % 101);
+		while ((t = (char)rand()) == buf[j+k])
+			;
+		buf[j+k] = t;
 
-			if (t > 0) {
-				t = msg_extract(buf+start+k, len, &msg);
-				if (t != 0)
-					++crc_check;
+		t = 0;
+		while ((res = msg_parsing(buf+t, MESSAGE_LEN-t, &start, &len)) != 0) {
+			if (res > 0 && msg_extract(buf+t+start, len, &msg) != 0) {
+				crc_check++;
+				break;
 			}
+			t += (res > 0) ? res : -res;
 		}
+	}
 
 	printf("Crc not check time: %d\n", crc_check);
-	printf("Crc check err rage: %lf\n", 1 - crc_check / 1000.0);
+	printf("Crc check err rage: %lf\n", 1 - crc_check / 10000.0);
 	printf("pass\n");
 }
 
