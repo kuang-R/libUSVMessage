@@ -5,7 +5,7 @@
 
 static uint32_t serial = 0;
 static void msg_other_construct(char *buf, struct Message *msg);
-static void msg_fill(struct Message *msg, int len, int destination,
+static void msg_fill(struct Message *msg, int len, uint16_t destination,
 		enum MCategory category, enum MCommand command);
 
 unsigned msg_speed_construct(char *buf, uint16_t destination,
@@ -128,7 +128,7 @@ int msg_go_dest_get(struct Message *msg,
 }
 
 unsigned msg_cruise_construct(char *buf,
-		int destination, int gps_num, struct GPS gps[])
+		uint16_t destination, int gps_num, struct GPS gps[])
 {
 	int i;
 	struct Message msg;
@@ -161,7 +161,7 @@ int msg_cruise_get(struct Message *msg, int *gps_num, struct GPS gps[])
 	return 0;
 }
 
-unsigned msg_hover_construct(char *buf, int destination)
+unsigned msg_hover_construct(char *buf, uint16_t destination)
 {
 	struct Message msg;
 
@@ -171,7 +171,126 @@ unsigned msg_hover_construct(char *buf, int destination)
 	return msg.length;
 }
 
-static void msg_fill(struct Message *msg, int len, int destination,
+unsigned msg_rtn_construct(char *buf, uint16_t destination,
+		enum MCommand command, struct Message *get_msg)
+{
+	struct Message msg;
+
+	*(uint8_t *)(msg.param) = get_msg->category;
+	*(uint8_t *)(msg.param+1) = get_msg->command;
+
+	msg_fill(&msg, MESSAGE_MIN_LEN+2, destination,
+			rtn, command);
+	msg_other_construct(buf, &msg);
+	return msg.length;
+}
+int msg_rtn_get(struct Message *msg,
+		enum MCategory *category, enum MCommand *command)
+{
+	if (msg->length != MESSAGE_MIN_LEN+2)
+		return -1;
+
+	*category = *(uint8_t *)(msg->param);
+	*command = *(uint8_t *)(msg->param+1);
+	return 0;
+}
+
+unsigned msg_gps_construct(char *buf, uint16_t destination, struct GPS post_gps)
+{
+	struct Message msg;
+
+	*(float *)(msg.param) = post_gps.latitude;
+	*(float *)(msg.param+4) = post_gps.longtitude;
+	*(float *)(msg.param+8) = post_gps.altitude;
+	*(float *)(msg.param+12) = post_gps.speed;
+
+	msg_fill(&msg, MESSAGE_MIN_LEN+16, destination,
+			data, gps);
+	msg_other_construct(buf, &msg);
+	return msg.length;
+}
+int msg_gps_get(struct Message *msg, struct GPS *gps)
+{
+	if (msg->length != MESSAGE_MIN_LEN+16)
+		return -1;
+
+	gps->latitude = *(float *)(msg->param);
+	gps->longtitude = *(float *)(msg->param+4);
+	gps->altitude = *(float *)(msg->param+8);
+	gps->speed = *(float *)(msg->param+12);
+	return 0;
+}
+
+unsigned msg_imu_construct(char *buf, uint16_t destination, struct IMU post_imu)
+{
+	struct Message msg;
+
+	*(float *)(msg.param) = post_imu.roll;
+	*(float *)(msg.param+4) = post_imu.pitch;
+	*(float *)(msg.param+8) = post_imu.yaw;
+
+	msg_fill(&msg, MESSAGE_MIN_LEN+12, destination,
+			data, imu);
+	msg_other_construct(buf, &msg);
+	return msg.length;
+}
+int msg_imu_get(struct Message *msg, struct IMU *imu)
+{
+	if (msg->length != MESSAGE_MIN_LEN+12)
+		return -1;
+
+	imu->roll = *(float *)(msg->param);
+	imu->pitch = *(float *)(msg->param+4);
+	imu->yaw = *(float *)(msg->param+8);
+	return 0;
+}
+
+unsigned msg_ultrasonic_construct(char *buf, uint16_t destination,
+		struct Ultrasonic ultra)
+{
+	struct Message msg;
+
+	*(int32_t *)(msg.param) = ultra.front;
+	*(int32_t *)(msg.param+4) = ultra.left;
+	*(int32_t *)(msg.param+8) = ultra.right;
+
+	msg_fill(&msg, MESSAGE_MIN_LEN+12, destination,
+			data, ultrasonic);
+	msg_other_construct(buf, &msg);
+	return msg.length;
+}
+int msg_ultrasonic_get(struct Message *msg, struct Ultrasonic *ultra)
+{
+	if (msg->length != MESSAGE_MIN_LEN+12)
+		return -1;
+
+	ultra->front = *(int32_t *)(msg->param);
+	ultra->left = *(int32_t *)(msg->param+4);
+	ultra->right = *(int32_t *)(msg->param+8);
+	return 0;
+}
+
+unsigned msg_battery_construct(char *buf, uint16_t destination, float battery)
+{
+	struct Message msg;
+
+	*(float *)(msg.param) = battery;
+
+	msg_fill(&msg, MESSAGE_MIN_LEN+4, destination,
+			data, battery);
+	msg_other_construct(buf, &msg);
+	return msg.length;
+}
+int msg_battery_get(struct Message *msg, float *battery)
+{
+	if (msg->length != MESSAGE_MIN_LEN+4)
+		return -1;
+
+	*battery = *(float *)(msg->param);
+	return 0;
+}
+
+static void msg_fill(struct Message *msg, int len, uint16_t destination,
 		enum MCategory category, enum MCommand command)
 {
 	msg->length = len;
@@ -193,8 +312,8 @@ static void msg_other_construct(char *buf, struct Message *msg)
 	*(uint16_t *)(buf+9) = msg->source;
 	*(buf+11) = 'D';
 	*(uint16_t *)(buf+12) = msg->destination;
-	*(enum MCategory *)(buf+14) = msg->category;
-	*(enum MCommand *)(buf+15) = msg->command;
+	*(uint8_t *)(buf+14) = msg->category;
+	*(uint8_t *)(buf+15) = msg->command;
 	/* 复制参数 */
 	for (i = 0; i < msg->length-MESSAGE_MIN_LEN; i++)
 		buf[16+i] = msg->param[i];

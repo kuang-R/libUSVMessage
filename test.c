@@ -6,7 +6,11 @@
 #include "msg_type.h"
 
 static void self();
+static void self_control();
+static void self_rtn();
+static void self_data();
 static void pressure();
+static void rtn_test(enum MCommand rtn_command, enum MCommand get_command);
 
 int main(int argc, char *argv[])
 {
@@ -26,9 +30,17 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
-/* 自测 */
 static void self()
+{
+	self_control();
+	printf("\n");
+	self_rtn();
+	printf("\n");
+	self_data();
+}
+
+/* 控制报文自测 */
+static void self_control()
 {
 	int i, j, k, x;
 	char buf[MESSAGE_LEN];
@@ -191,6 +203,129 @@ static void self()
 	printf("Hover self test pass.\n");
 }
 
+/* 回馈报文自测 */
+static void self_rtn()
+{
+	printf("Return self test start,\n");
+	rtn_test(succeed, speed);
+	rtn_test(succeed, beep);
+	rtn_test(succeed, salvage);
+	rtn_test(succeed, auto_return);
+	rtn_test(succeed, auto_avoid);
+	rtn_test(succeed, go_dest);
+	rtn_test(succeed, cruise);
+	rtn_test(succeed, hover);
+
+	rtn_test(failure, speed);
+	rtn_test(failure, beep);
+	rtn_test(failure, salvage);
+	rtn_test(failure, auto_return);
+	rtn_test(failure, auto_avoid);
+	rtn_test(failure, go_dest);
+	rtn_test(failure, cruise);
+	rtn_test(failure, hover);
+	printf("Return self test pass,\n");
+
+}
+
+static void self_data()
+{
+	int i, j, k;
+	float ii, jj, kk, zz;
+	struct GPS gps;
+	struct IMU imu;
+	struct Ultrasonic ultra;
+	char buf[MESSAGE_LEN];
+	int start, len;
+	struct Message msg;
+
+	/* gps */
+	printf("Gps self test start\n");
+	for (i = 0; i < 30; i++)
+	for (ii = 0; ii < 20; ii += 1.3)
+	for (jj = 20; jj < 40; jj += 1.3)
+	for (kk = 40; kk < 60; kk += 1.3)
+	for (zz = 60; zz < 80; zz += 1.3) {
+		gps.latitude = ii; gps.longtitude = jj; gps.altitude = kk; gps.speed = zz;
+		msg_gps_construct(buf+i, 1, gps);
+		k = 0;
+		while ((j = msg_parsing(buf+k, MESSAGE_LEN-k, &start, &len)) != 0) {
+			if (j > 0 && msg_extract(buf+k+start, len, &msg) == 0) {
+				assert(msg_gps_get(&msg, &gps) == 0);
+				assert(gps.latitude - ii < 0.000001);
+				assert(gps.longtitude - jj < 0.000001);
+				assert(gps.altitude - kk < 0.000001);
+				assert(gps.speed - zz < 0.000001);
+				break;
+			}
+			k += (j > 0) ? j : -j;
+		}
+	}
+	printf("Gps self test pass.\n");
+
+	/* imu */
+	printf("Imu self test start.\n");
+	for (i = 0; i < 30; i++)
+	for (ii = 0; ii < 30; ii += 1.3)
+	for (jj = 30; jj < 60; jj += 1.3)
+	for (kk = 60; kk < 90; kk += 1.3) {
+		imu.pitch = ii; imu.roll = jj; imu.yaw = kk;
+		msg_imu_construct(buf+i, 1, imu);
+		k = 0;
+		while ((j = msg_parsing(buf+k, MESSAGE_LEN-k, &start, &len)) != 0) {
+			if (j > 0 && msg_extract(buf+k+start, len, &msg) == 0) {
+				assert(msg_imu_get(&msg, &imu) == 0);
+				assert(imu.pitch - ii < 0.000001);
+				assert(imu.roll - jj < 0.000001);
+				assert(imu.yaw - kk < 0.000001);
+				break;
+			}
+			k += (j > 0) ? j : -j;
+		}
+	}
+	printf("Imu self test pass.\n");
+
+	/* ultrasonic */
+	printf("Ultrasonic self test start.\n");
+	for (i = 10; i < 30; i++)
+	for (ii = 0; ii < 50; ii++)
+	for (jj = 50; jj < 100; jj++)
+	for (kk = 100; kk <  150; kk++) {
+		ultra.front = ii; ultra.left = jj; ultra.right = kk;
+		msg_ultrasonic_construct(buf+i, 1, ultra);
+		k = 0;
+		while ((j = msg_parsing(buf+k, MESSAGE_LEN-k, &start, &len)) != 0) {
+			if (j > 0 && msg_extract(buf+k+start, len, &msg) == 0) {
+				assert(msg_ultrasonic_get(&msg, &ultra) == 0);
+				assert(ultra.front == ii);
+				assert(ultra.left == jj);
+				assert(ultra.right == kk);
+				break;
+			}
+			k += (j > 0) ? j : -j;
+		}
+	}
+	printf("Ultrasonic self test pass.\n");
+
+	/* battery */
+	printf("Battery self test start.\n");
+	for (i = 10; i < 30; i++)
+	for (ii = 0; ii < 28; ii += 0.12) {
+		msg_battery_construct(buf+i, 1, ii);
+		k = 0;
+		while ((j = msg_parsing(buf+k, MESSAGE_LEN-k, &start, &len)) != 0) {
+			if (j > 0 && msg_extract(buf+k+start, len, &msg) == 0) {
+				assert(msg_battery_get(&msg, &jj) == 0);
+				assert(ii - jj < 0.000001);
+				break;
+			}
+			k += (j > 0) ? j : -j;
+		}
+	}
+	printf("Battery self test pass.\n");
+
+}
+
 /* 压力测试 */
 static void pressure()
 {
@@ -228,3 +363,35 @@ static void pressure()
 	printf("Crc check err rage: %lf\n", 1 - crc_check / 1000.0);
 	printf("pass\n");
 }
+
+static void rtn_test(enum MCommand rtn_command, enum MCommand get_command)
+{
+	int i, j, k;
+	struct Message msg;
+	char buf[MESSAGE_LEN];
+	int start, len;
+	enum MCategory category;
+	enum MCommand command;
+
+	for (i = 0; i < 30; i++) {
+		msg.category = control;
+		msg.command = get_command;
+
+		msg_rtn_construct(buf+i, 2, rtn_command, &msg);
+		k = 0;
+		while ((j = msg_parsing(buf+k, MESSAGE_LEN-k, &start, &len)) != 0) {
+			//printf("j %d, k %d\n", j, k);
+			if (j > 0 && msg_extract(buf+k+start, len, &msg) == 0) {
+				assert(msg.category == rtn);
+				assert(msg_rtn_get(&msg, &category,  &command) == 0);
+				//printf("%d %d\n", command, get_command);
+				assert(category == control);
+				assert(command == get_command);
+				break;
+			}
+			k += (j > 0) ? j : -j;
+		}
+	}
+
+}
+

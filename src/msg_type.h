@@ -25,7 +25,8 @@ enum MCategory
 	rtn,
 	data
 };
-enum MCommand {
+enum MCommand
+{
 	// control-有返回报文
 	speed = 1,	// usv-427
 	salvage,
@@ -76,9 +77,9 @@ struct GPS
 };
 struct Ultrasonic
 {
-    int front;
-    int left;
-    int right;
+    int32_t front;
+    int32_t left;
+    int32_t right;
 };
 
 /* 解析报文 */
@@ -109,10 +110,30 @@ int msg_go_dest_get(struct Message *msg,
 		float *latitude, float *longtitude);
 /* cruise */
 unsigned msg_cruise_construct(char *buf,
-		int destination, int gps_num, struct GPS gps[]);
+		uint16_t destination, int gps_num, struct GPS gps[]);
 int msg_cruise_get(struct Message *msg, int *gps_num, struct GPS gps[]);
 /* hover */
-unsigned msg_hover_construct(char *buf, int destination);
+unsigned msg_hover_construct(char *buf, uint16_t destination);
+
+/* return */
+unsigned msg_rtn_construct(char *buf, uint16_t destination,
+		enum MCommand command, struct Message *get_msg);
+int msg_rtn_get(struct Message *msg,
+		enum MCategory *category, enum MCommand *command);
+
+/* gps */
+unsigned msg_gps_construct(char *buf, uint16_t destination, struct GPS gps);
+int msg_gps_get(struct Message *msg, struct GPS *gps);
+/* imu */
+unsigned msg_imu_construct(char *buf, uint16_t destination, struct IMU imu);
+int msg_imu_get(struct Message *msg, struct IMU *imu);
+/* ultrasonic */
+unsigned msg_ultrasonic_construct(char *buf, uint16_t destination,
+		struct Ultrasonic ultra);
+int msg_ultrasonic_get(struct Message *msg, struct Ultrasonic *ultra);
+/* battery */
+unsigned msg_battery_construct(char *buf, uint16_t destination, float battery);
+int msg_battery_get(struct Message *msg, float *battery);
 
 #ifdef __cplusplus
 }

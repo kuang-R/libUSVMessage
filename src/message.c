@@ -68,8 +68,8 @@ int msg_extract(const char *buf, int msg_length, struct Message *msg)
 	msg->length = *(int32_t *)(buf+4);
 	msg->source = *(uint16_t *)(buf+9);
 	msg->destination = *(uint16_t *)(buf+12);
-	msg->category = *(enum MCategory *)(buf+14);
-	msg->command = *(enum MCommand *)(buf+15);
+	msg->category = *(uint8_t *)(buf+14);
+	msg->command = *(uint8_t *)(buf+15);
 
 	for (i = 0; i < msg_length; i++)
 		msg->param[i] = buf[16+i];
