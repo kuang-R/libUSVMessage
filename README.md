@@ -80,5 +80,5 @@ int msg_ultrasonic_get(struct Message *msg, struct Ultrasonic *ultra);
 int msg_battery_get(struct Message *msg, float *battery);
 ```
 ### crc16
-使用压力测试，每1000次对21字节长的报文一个字节进行随机替换（非原字符）。
-crc通过数为300，检验率为70%。
+使用压力测试，对21字节长的报文随机一个字节进行随机替换（非原字符）。
+测试得出通过率小于0.0001%

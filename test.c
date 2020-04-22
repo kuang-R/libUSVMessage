@@ -360,7 +360,7 @@ static void crc_check()
 
 		t = 0;
 		while ((res = msg_parsing(buf+t, MESSAGE_LEN-t, &start, &len)) != 0) {
-			if (res > 0 && msg_extract(buf+t+start, len, &msg) != 0) {
+			if (res > 0 && msg_extract(buf+t+start, len, &msg) == 0) {
 				crc_check++;
 				break;
 			}
