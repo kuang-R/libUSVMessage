@@ -5,7 +5,10 @@
 #include <stdlib.h>
 #include "msg_type.h"
 
+#define CHECK_TIME 10000000
+
 static void self();
+static void crc_check();
 static void self_control();
 static void self_rtn();
 static void self_data();
@@ -18,6 +21,7 @@ int main(int argc, char *argv[])
 
 	if (argc < 2) {
 		printf("add command\n");
+		printf("- crc\n");
 		printf("- self\n");
 		printf("- pressure\n");
 		return 0;
@@ -25,6 +29,8 @@ int main(int argc, char *argv[])
 
 	if (strcmp(argv[1], "self") == 0)
 		self();
+	else if (strcmp(argv[1], "crc") == 0)
+		crc_check();
 	else if (strcmp(argv[1], "pressure") == 0)
 		pressure();
 
@@ -329,6 +335,12 @@ static void self_data()
 /* 压力测试 */
 static void pressure()
 {
+
+}
+
+/* crc check test */
+static void crc_check()
+{
 	int i, j, k, t;
 	char buf[MESSAGE_LEN];
 	struct Message msg;
@@ -336,8 +348,8 @@ static void pressure()
 	int crc_check = 0;
 	int res;
 
-	printf("Start parsing test.\n");
-	for (i = 0; i < 10000; i++) {
+	printf("Start crc check test.\n");
+	for (i = 0; i < CHECK_TIME; i++) {
 		j = (rand() % 50) + 1;
 		k = (rand() % 21);
 
@@ -355,10 +367,10 @@ static void pressure()
 			t += (res > 0) ? res : -res;
 		}
 	}
+	printf("Crc check pass times: %d\n", crc_check);
+	printf("Crc check times: %d\n", CHECK_TIME);
+	printf("Crc check pass rage: %lf\n", crc_check / (double)CHECK_TIME);
 
-	printf("Crc not check time: %d\n", crc_check);
-	printf("Crc check err rage: %lf\n", 1 - crc_check / 10000.0);
-	printf("pass\n");
 }
 
 static void rtn_test(enum MCommand rtn_command, enum MCommand get_command)
