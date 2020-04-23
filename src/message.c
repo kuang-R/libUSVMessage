@@ -3,7 +3,7 @@
 #include "msg_type.h"
 #include "checksum.h"
 
-static char *msg_search(const char *buf, int ch, int buf_len);
+static const char *msg_search(const char *buf, int ch, int buf_len);
 
 /* 判断有没有报文在缓冲区内
  * msg_start 报文开始位置
@@ -14,7 +14,7 @@ static char *msg_search(const char *buf, int ch, int buf_len);
 int msg_parsing(const char *buf, int buf_len, int *msg_start, int *msg_length)
 {
 	/* 分别表示头位置，长度位置，S字符位置，D字符位置 */
-	char *Hpos, *Lpos, *Spos, *Dpos;
+	const char *Hpos, *Lpos, *Spos, *Dpos;
 
 	if (buf_len < MESSAGE_MIN_LEN) {
 		return 0;
@@ -77,7 +77,7 @@ int msg_extract(const char *buf, int msg_length, struct Message *msg)
 	return 0;
 }
 
-static char *msg_search(const char *buf, int ch, int buf_len)
+static const char *msg_search(const char *buf, int ch, int buf_len)
 {
 	int i;
 
