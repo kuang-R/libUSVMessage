@@ -27,6 +27,12 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
+	printf("MESSAGE_SOURCE: %d\n", MESSAGE_SOURCE);
+	printf("MESSAGE_LEN: %d\n", MESSAGE_LEN);
+	printf("MESSAGE_PARAM_LEN: %d\n", MESSAGE_PARAM_LEN);
+	printf("GPS_NUM: %d\n", GPS_NUM);
+	printf("\n");
+
 	if (strcmp(argv[1], "self") == 0)
 		self();
 	else if (strcmp(argv[1], "crc") == 0)

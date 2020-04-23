@@ -8,6 +8,7 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
 configure_file(config.h.in config.h)
+add_compile_definitions(MESSAGE_LEN=256 MESSAGE_SOURCE=10)
 
 add_subdirectory(src)
 
