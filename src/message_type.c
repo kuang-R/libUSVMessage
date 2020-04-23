@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "msg_type.h"
+#include "include/msg_type.h"
 #include "checksum.h"
 
 static uint32_t serial = 0;
