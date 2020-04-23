@@ -7,15 +7,24 @@ extern "C" {
 #include <stdint.h>
 
 #define MESSAGE_MIN_LEN 19
+
 #ifndef MESSAGE_SOURCE
 # define MESSAGE_SOURCE 2
 #endif  // MESSAGE_SOURCE
+
 #ifndef MESSAGE_LEN
 #  define MESSAGE_LEN (64 + MESSAGE_MIN_LEN)
 #  define MESSAGE_PARAM_LEN 64
-#elif
-#  define MESSAGE_PARAM_LEN (MESSAGE_LEN - MESSAGE_MIN_LEN)
+#else
+#  if MESSAGE_LEN > MESSAGE_MIN_LIN
+#    define MESSAGE_PARAM_LEN (MESSAGE_LEN - MESSAGE_MIN_LEN)
+#  else
+#    undef MESSAGE_LEN
+#    define MESSAGE_LEN MESSAGE_MIN_LEN
+#    define MESSAGE_PARAM_LEN 0
+#  endif
 #endif  // MESSAGE_LEN
+
 #define GPS_NUM ((int)(MESSAGE_PARAM_LEN / 8))
 
 // 报文枚举
