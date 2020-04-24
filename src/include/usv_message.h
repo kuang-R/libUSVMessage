@@ -99,28 +99,28 @@ int msg_extract(const char *buf, int msg_length, struct Message *msg);
 /* speed */
 unsigned msg_speed_construct(char *buf, uint16_t destination,
 		int8_t lspeed, int8_t rspeed);
-int msg_speed_get(struct Message *msg, int *lspeed, int *rspeed);
+int msg_speed_get(const struct Message *msg, int *lspeed, int *rspeed);
 /* beep */
 unsigned msg_beep_construct(char *buf, uint16_t destination, int8_t beep);
-int msg_beep_get(struct Message *msg, int *beep);
+int msg_beep_get(const struct Message *msg, int *beep);
 /* salvage */
 unsigned msg_salvage_construct(char *buf, uint16_t destination);
 /* auto_return */
 unsigned msg_return_construct(char *buf, uint16_t destination,
 		uint8_t status);
-int msg_return_get(struct Message *msg, int *status);
+int msg_return_get(const struct Message *msg, int *status);
 /* auto_avoid */
 unsigned msg_avoid_construct(char *buf, uint16_t destination, uint8_t status);
-int msg_avoid_get(struct Message *msg, int *status);
+int msg_avoid_get(const struct Message *msg, int *status);
 /* go_dest */
 unsigned msg_go_dest_construct(char *buf, uint16_t destination,
 		float latitude, float longtitude);
-int msg_go_dest_get(struct Message *msg,
+int msg_go_dest_get(const struct Message *msg,
 		float *latitude, float *longtitude);
 /* cruise */
 unsigned msg_cruise_construct(char *buf,
 		uint16_t destination, int gps_num, struct GPS gps[]);
-int msg_cruise_get(struct Message *msg, int *gps_num, struct GPS gps[]);
+int msg_cruise_get(const struct Message *msg, int *gps_num, struct GPS gps[]);
 /* hover */
 unsigned msg_hover_construct(char *buf, uint16_t destination);
 
@@ -131,17 +131,17 @@ int msg_feedback_get(const struct Message *msg, uint32_t *serial);
 
 /* gps */
 unsigned msg_gps_construct(char *buf, uint16_t destination, struct GPS gps);
-int msg_gps_get(struct Message *msg, struct GPS *gps);
+int msg_gps_get(const struct Message *msg, struct GPS *gps);
 /* imu */
 unsigned msg_imu_construct(char *buf, uint16_t destination, struct IMU imu);
-int msg_imu_get(struct Message *msg, struct IMU *imu);
+int msg_imu_get(const struct Message *msg, struct IMU *imu);
 /* ultrasonic */
 unsigned msg_ultrasonic_construct(char *buf, uint16_t destination,
 		struct Ultrasonic ultra);
-int msg_ultrasonic_get(struct Message *msg, struct Ultrasonic *ultra);
+int msg_ultrasonic_get(const struct Message *msg, struct Ultrasonic *ultra);
 /* battery */
 unsigned msg_battery_construct(char *buf, uint16_t destination, float battery);
-int msg_battery_get(struct Message *msg, float *battery);
+int msg_battery_get(const struct Message *msg, float *battery);
 
 #ifdef __cplusplus
 }

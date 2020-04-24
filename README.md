@@ -28,7 +28,7 @@ unsigned msg_go_dest_construct(char *buf, uint16_t destination,float latitude, f
 unsigned msg_cruise_construct(char *buf, uint16_t destination, int gps_num, struct GPS gps[]);
 unsigned msg_hover_construct(char *buf, uint16_t destination);
 
-unsigned msg_rtn_construct(char *buf, uint16_t destination, enum MCommand command, struct Message *get_msg);
+unsigned msg_feedback_construct(char *buf, uint16_t destination, enum MCommand command, const struct Message *get_msg);
 
 unsigned msg_gps_construct(char *buf, uint16_t destination, struct GPS gps);
 unsigned msg_imu_construct(char *buf, uint16_t destination, struct IMU imu);
@@ -65,19 +65,19 @@ while ((res = msg_parsing(buf+pos, BUF_SIZE-pos, &start, &len)) != 0) {
 
 返回0表示提取成功，-1表示提取失败。
 ``` C
-int msg_speed_get(struct Message *msg, int *lspeed, int *rspeed);
-int msg_beep_get(struct Message *msg, int *beep);
-int msg_return_get(struct Message *msg, int *status);
-int msg_avoid_get(struct Message *msg, int *status);
-int msg_go_dest_get(struct Message *msg,float *latitude, float *longtitude);
-int msg_cruise_get(struct Message *msg, int *gps_num, struct GPS gps[]);
+int msg_speed_get(const struct Message *msg, int *lspeed, int *rspeed);
+int msg_beep_get(const struct Message *msg, int *beep);
+int msg_return_get(const struct Message *msg, int *status);
+int msg_avoid_get(const struct Message *msg, int *status);
+int msg_go_dest_get(const struct Message *msg,float *latitude, float *longtitude);
+int msg_cruise_get(const struct Message *msg, int *gps_num, struct GPS gps[]);
 
-int msg_rtn_get(struct Message *msg, enum MCategory *category, enum MCommand *command);
+int msg_feedback_get(const struct Message *msg, enum MCategory *category, enum MCommand *command);
 
-int msg_gps_get(struct Message *msg, struct GPS *gps);
-int msg_imu_get(struct Message *msg, struct IMU *imu);
-int msg_ultrasonic_get(struct Message *msg, struct Ultrasonic *ultra);
-int msg_battery_get(struct Message *msg, float *battery);
+int msg_gps_get(const struct Message *msg, struct GPS *gps);
+int msg_imu_get(const struct Message *msg, struct IMU *imu);
+int msg_ultrasonic_get(const struct Message *msg, struct Ultrasonic *ultra);
+int msg_battery_get(const struct Message *msg, float *battery);
 ```
 ### crc16
 使用压力测试，对21字节长的报文随机一个字节进行随机替换（非原字符）。

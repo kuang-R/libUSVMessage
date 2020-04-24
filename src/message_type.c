@@ -22,7 +22,7 @@ unsigned msg_speed_construct(char *buf, uint16_t destination,
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_speed_get(struct Message *msg, int *lspeed, int *rspeed)
+int msg_speed_get(const struct Message *msg, int *lspeed, int *rspeed)
 {
 	if (msg->length != MESSAGE_MIN_LEN+2)
 		return -1;
@@ -43,7 +43,7 @@ unsigned msg_beep_construct(char *buf, uint16_t destination, int8_t beep)
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_beep_get(struct Message *msg, int *beep)
+int msg_beep_get(const struct Message *msg, int *beep)
 {
 	if (msg->length != MESSAGE_MIN_LEN + 1)
 		return -1;
@@ -74,7 +74,7 @@ unsigned msg_return_construct(char *buf, uint16_t destination,
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_return_get(struct Message *msg, int *status)
+int msg_return_get(const struct Message *msg, int *status)
 {
 	if (msg->length != MESSAGE_MIN_LEN+1)
 		return -1;
@@ -95,7 +95,7 @@ unsigned msg_avoid_construct(char *buf, uint16_t destination,
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_avoid_get(struct Message *msg, int *status)
+int msg_avoid_get(const struct Message *msg, int *status)
 {
 	if (msg->length != MESSAGE_MIN_LEN+1)
 		return -1;
@@ -117,7 +117,7 @@ unsigned msg_go_dest_construct(char *buf, uint16_t destination,
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_go_dest_get(struct Message *msg,
+int msg_go_dest_get(const struct Message *msg,
 		float *latitude, float *longtitude)
 {
 	if (msg->length != MESSAGE_LEN+8)
@@ -147,7 +147,7 @@ unsigned msg_cruise_construct(char *buf,
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_cruise_get(struct Message *msg, int *gps_num, struct GPS gps[])
+int msg_cruise_get(const struct Message *msg, int *gps_num, struct GPS gps[])
 {
 	int i;
 	
@@ -207,7 +207,7 @@ unsigned msg_gps_construct(char *buf, uint16_t destination, struct GPS post_gps)
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_gps_get(struct Message *msg, struct GPS *gps)
+int msg_gps_get(const struct Message *msg, struct GPS *gps)
 {
 	if (msg->length != MESSAGE_MIN_LEN+16)
 		return -1;
@@ -232,7 +232,7 @@ unsigned msg_imu_construct(char *buf, uint16_t destination, struct IMU post_imu)
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_imu_get(struct Message *msg, struct IMU *imu)
+int msg_imu_get(const struct Message *msg, struct IMU *imu)
 {
 	if (msg->length != MESSAGE_MIN_LEN+12)
 		return -1;
@@ -257,7 +257,7 @@ unsigned msg_ultrasonic_construct(char *buf, uint16_t destination,
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_ultrasonic_get(struct Message *msg, struct Ultrasonic *ultra)
+int msg_ultrasonic_get(const struct Message *msg, struct Ultrasonic *ultra)
 {
 	if (msg->length != MESSAGE_MIN_LEN+12)
 		return -1;
@@ -279,7 +279,7 @@ unsigned msg_battery_construct(char *buf, uint16_t destination, float battery)
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_battery_get(struct Message *msg, float *battery)
+int msg_battery_get(const struct Message *msg, float *battery)
 {
 	if (msg->length != MESSAGE_MIN_LEN+4)
 		return -1;
@@ -291,6 +291,9 @@ int msg_battery_get(struct Message *msg, float *battery)
 static void msg_fill(struct Message *msg, int len, uint16_t destination,
 		enum MCategory category, enum MCommand command)
 {
+	msg->serial = serial++;
+	msg->source = MESSAGE_SOURCE;
+
 	msg->length = len;
 	msg->destination = destination;
 	msg->category = category;
@@ -300,9 +303,6 @@ static void msg_fill(struct Message *msg, int len, uint16_t destination,
 static void msg_other_construct(char *buf, struct Message *msg)
 {
 	int i;
-
-	msg->serial = serial++;
-	msg->source = MESSAGE_SOURCE;
 
 	*(uint32_t *)(buf) = msg->serial;
 	*(int32_t *)(buf+4) = msg->length;
