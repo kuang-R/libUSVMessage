@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "msg_type.h"
 
-#define CHECK_TIME 10000000
+#define CHECK_TIME 1000000
 
 static void self();
 static void crc_check();
@@ -218,25 +218,15 @@ static void self_control()
 /* 回馈报文自测 */
 static void self_feedback()
 {
-	printf("Return self test start,\n");
-	feedback_test(succeed, speed);
-	feedback_test(succeed, beep);
-	feedback_test(succeed, salvage);
-	feedback_test(succeed, auto_return);
-	feedback_test(succeed, auto_avoid);
-	feedback_test(succeed, go_dest);
-	feedback_test(succeed, cruise);
-	feedback_test(succeed, hover);
+	int i;
+	uint32_t serial;
 
-	feedback_test(failure, speed);
-	feedback_test(failure, beep);
-	feedback_test(failure, salvage);
-	feedback_test(failure, auto_return);
-	feedback_test(failure, auto_avoid);
-	feedback_test(failure, go_dest);
-	feedback_test(failure, cruise);
-	feedback_test(failure, hover);
-	printf("Return self test pass,\n");
+	printf("Feedback self test start,\n");
+	for (i = 0; i < CHECK_TIME; i++) {
+		uint32_t serial = rand();
+		feedback_test(succeed, serial);
+		feedback_test(failure, serial);
+	}
 
 }
 
@@ -379,7 +369,7 @@ static void crc_check()
 
 }
 
-static void feedback_test(enum MCommand feedback_command, enum MCommand get_command)
+static void feedback_test(enum MCommand feedback_command, uint32_t serial)
 {
 	int i, j, k;
 	struct Message msg;
@@ -387,21 +377,20 @@ static void feedback_test(enum MCommand feedback_command, enum MCommand get_comm
 	int start, len;
 	enum MCategory category;
 	enum MCommand command;
+	uint32_t post_serial;
 
+	post_serial = serial;
 	for (i = 0; i < 30; i++) {
-		msg.category = control;
-		msg.command = get_command;
+		msg.serial = post_serial;
+		serial = post_serial;
 
 		msg_feedback_construct(buf+i, 2, feedback_command, &msg);
 		k = 0;
 		while ((j = msg_parsing(buf+k, MESSAGE_LEN-k, &start, &len)) != 0) {
-			//printf("j %d, k %d\n", j, k);
 			if (j > 0 && msg_extract(buf+k+start, len, &msg) == 0) {
 				assert(msg.category == feedback);
-				assert(msg_feedback_get(&msg, &category,  &command) == 0);
-				//printf("%d %d\n", command, get_command);
-				assert(category == control);
-				assert(command == get_command);
+				assert(msg_feedback_get(&msg, &serial)==0);
+				assert(serial == post_serial);
 				break;
 			}
 			k += (j > 0) ? j : -j;

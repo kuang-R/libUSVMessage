@@ -3,7 +3,8 @@
 #include "include/msg_type.h"
 #include "checksum.h"
 
-static uint32_t serial = 0;
+static volatile uint32_t serial = 0;
+
 static void msg_other_construct(char *buf, struct Message *msg);
 static void msg_fill(struct Message *msg, int len, uint16_t destination,
 		enum MCategory category, enum MCommand command);
@@ -172,26 +173,23 @@ unsigned msg_hover_construct(char *buf, uint16_t destination)
 }
 
 unsigned msg_feedback_construct(char *buf, uint16_t destination,
-		enum MCommand command, struct Message *get_msg)
+		enum MCommand command, const struct Message *get_msg)
 {
 	struct Message msg;
 
-	*(uint8_t *)(msg.param) = get_msg->category;
-	*(uint8_t *)(msg.param+1) = get_msg->command;
+	*(uint32_t *)(msg.param) = get_msg->serial;
 
-	msg_fill(&msg, MESSAGE_MIN_LEN+2, destination,
+	msg_fill(&msg, MESSAGE_MIN_LEN+4, destination,
 			feedback, command);
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_feedback_get(struct Message *msg,
-		enum MCategory *category, enum MCommand *command)
+int msg_feedback_get(const struct Message *msg, uint32_t *serial)
 {
-	if (msg->length != MESSAGE_MIN_LEN+2)
+	if (msg->length != MESSAGE_MIN_LEN+4)
 		return -1;
 
-	*category = *(uint8_t *)(msg->param);
-	*command = *(uint8_t *)(msg->param+1);
+	*serial = *(uint32_t *)(msg->param);
 	return 0;
 }
 

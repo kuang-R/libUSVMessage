@@ -126,9 +126,8 @@ unsigned msg_hover_construct(char *buf, uint16_t destination);
 
 /* return */
 unsigned msg_feedback_construct(char *buf, uint16_t destination,
-		enum MCommand command, struct Message *get_msg);
-int msg_feedback_get(struct Message *msg,
-		enum MCategory *category, enum MCommand *command);
+		enum MCommand command, const struct Message *get_msg);
+int msg_feedback_get(const struct Message *msg, uint32_t *serial);
 
 /* gps */
 unsigned msg_gps_construct(char *buf, uint16_t destination, struct GPS gps);
