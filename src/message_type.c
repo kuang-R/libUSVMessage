@@ -171,7 +171,7 @@ unsigned msg_hover_construct(char *buf, uint16_t destination)
 	return msg.length;
 }
 
-unsigned msg_rtn_construct(char *buf, uint16_t destination,
+unsigned msg_feedback_construct(char *buf, uint16_t destination,
 		enum MCommand command, struct Message *get_msg)
 {
 	struct Message msg;
@@ -180,11 +180,11 @@ unsigned msg_rtn_construct(char *buf, uint16_t destination,
 	*(uint8_t *)(msg.param+1) = get_msg->command;
 
 	msg_fill(&msg, MESSAGE_MIN_LEN+2, destination,
-			rtn, command);
+			feedback, command);
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_rtn_get(struct Message *msg,
+int msg_feedback_get(struct Message *msg,
 		enum MCategory *category, enum MCommand *command)
 {
 	if (msg->length != MESSAGE_MIN_LEN+2)

@@ -10,10 +10,10 @@
 static void self();
 static void crc_check();
 static void self_control();
-static void self_rtn();
+static void self_feedback();
 static void self_data();
 static void pressure();
-static void rtn_test(enum MCommand rtn_command, enum MCommand get_command);
+static void feedback_test(enum MCommand feedback_command, enum MCommand get_command);
 
 int main(int argc, char *argv[])
 {
@@ -46,7 +46,7 @@ static void self()
 {
 	self_control();
 	printf("\n");
-	self_rtn();
+	self_feedback();
 	printf("\n");
 	self_data();
 }
@@ -216,26 +216,26 @@ static void self_control()
 }
 
 /* 回馈报文自测 */
-static void self_rtn()
+static void self_feedback()
 {
 	printf("Return self test start,\n");
-	rtn_test(succeed, speed);
-	rtn_test(succeed, beep);
-	rtn_test(succeed, salvage);
-	rtn_test(succeed, auto_return);
-	rtn_test(succeed, auto_avoid);
-	rtn_test(succeed, go_dest);
-	rtn_test(succeed, cruise);
-	rtn_test(succeed, hover);
+	feedback_test(succeed, speed);
+	feedback_test(succeed, beep);
+	feedback_test(succeed, salvage);
+	feedback_test(succeed, auto_return);
+	feedback_test(succeed, auto_avoid);
+	feedback_test(succeed, go_dest);
+	feedback_test(succeed, cruise);
+	feedback_test(succeed, hover);
 
-	rtn_test(failure, speed);
-	rtn_test(failure, beep);
-	rtn_test(failure, salvage);
-	rtn_test(failure, auto_return);
-	rtn_test(failure, auto_avoid);
-	rtn_test(failure, go_dest);
-	rtn_test(failure, cruise);
-	rtn_test(failure, hover);
+	feedback_test(failure, speed);
+	feedback_test(failure, beep);
+	feedback_test(failure, salvage);
+	feedback_test(failure, auto_return);
+	feedback_test(failure, auto_avoid);
+	feedback_test(failure, go_dest);
+	feedback_test(failure, cruise);
+	feedback_test(failure, hover);
 	printf("Return self test pass,\n");
 
 }
@@ -379,7 +379,7 @@ static void crc_check()
 
 }
 
-static void rtn_test(enum MCommand rtn_command, enum MCommand get_command)
+static void feedback_test(enum MCommand feedback_command, enum MCommand get_command)
 {
 	int i, j, k;
 	struct Message msg;
@@ -392,13 +392,13 @@ static void rtn_test(enum MCommand rtn_command, enum MCommand get_command)
 		msg.category = control;
 		msg.command = get_command;
 
-		msg_rtn_construct(buf+i, 2, rtn_command, &msg);
+		msg_feedback_construct(buf+i, 2, feedback_command, &msg);
 		k = 0;
 		while ((j = msg_parsing(buf+k, MESSAGE_LEN-k, &start, &len)) != 0) {
 			//printf("j %d, k %d\n", j, k);
 			if (j > 0 && msg_extract(buf+k+start, len, &msg) == 0) {
-				assert(msg.category == rtn);
-				assert(msg_rtn_get(&msg, &category,  &command) == 0);
+				assert(msg.category == feedback);
+				assert(msg_feedback_get(&msg, &category,  &command) == 0);
 				//printf("%d %d\n", command, get_command);
 				assert(category == control);
 				assert(command == get_command);

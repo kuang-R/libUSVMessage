@@ -31,7 +31,7 @@ extern "C" {
 enum MCategory
 {
 	control = 1,
-	rtn,
+	feedback,
 	data
 };
 enum MCommand
@@ -125,9 +125,9 @@ int msg_cruise_get(struct Message *msg, int *gps_num, struct GPS gps[]);
 unsigned msg_hover_construct(char *buf, uint16_t destination);
 
 /* return */
-unsigned msg_rtn_construct(char *buf, uint16_t destination,
+unsigned msg_feedback_construct(char *buf, uint16_t destination,
 		enum MCommand command, struct Message *get_msg);
-int msg_rtn_get(struct Message *msg,
+int msg_feedback_get(struct Message *msg,
 		enum MCategory *category, enum MCommand *command);
 
 /* gps */
