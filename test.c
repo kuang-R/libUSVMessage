@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <time.h>
 #include <stdlib.h>
-#include "msg_type.h"
+#include "usv_message.h"
 
 #define CHECK_TIME 1000000
 
