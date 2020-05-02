@@ -83,6 +83,26 @@ int msg_battery_get(const struct Message *msg, float *battery);
 使用压力测试，对21字节长的报文随机一个字节进行随机替换（非原字符）。
 测试得出通过率小于0.0001%
 ### 串口线传输压力测试
+每隔10ms，F427发送一条不变的gps报文。测试20分钟。
 #### 115200 baud
-每隔10ms，F427发送一条不变的gps报文。测试总量189016条。丢失量9290条。
-丢失率约为0.15。其中连续丢失1个报文4898次，占0.53。连续丢失两个报文744次，占0.16。
+all: 125029 get: 115364 miss: 9665
+get rate: 0.922698
+pass 1 count: 115363
+pass 2 count: 3161
+pass 3 count: 488
+pass 4 count: 45
+pass 5 count: 1
+pass 257 count: 3
+pass 923 count: 1
+#### 230400 baud
+```
+all: 119582 get: 115851 miss: 3731
+get rate: 0.9688
+pass 1 count: 115850
+pass 2 count: 3193
+pass 3 count: 501
+pass 4 count: 31
+pass 257 count: 6
+```
+#### 结论
+使用高波特率能提高串口接受率
