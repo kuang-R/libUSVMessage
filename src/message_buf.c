@@ -43,7 +43,7 @@ int msg_parsing(const char *buf, int buf_len, int *msg_start, int *msg_length)
 	}
 	/* 检查END标识 */
 	if ((uint8_t)Hpos[*msg_length-1] != 0xFF) {
-		return -(Hpos - buf);
+		return -(Hpos - buf) - 1;
 	}
 
 	return Hpos - buf + *msg_length;
