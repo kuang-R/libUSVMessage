@@ -58,11 +58,8 @@ int msg_extract(const char *buf, int msg_length, struct Message *msg)
 	uint16_t real_crc;
 
 	/* check crc */
-	msg->crc = *(uint16_t *)(buf + msg_length-3);
-	real_crc = crc_16(buf, msg_length-3);
-	if (real_crc != msg->crc) {
+	if (0 != crc_16(buf, msg_length-1))
 		return -1;
-	}
 
 	msg->serial = *(uint32_t *)(buf);
 	msg->length = *(int32_t *)(buf+4);

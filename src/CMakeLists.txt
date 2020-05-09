@@ -1,4 +1,4 @@
-# tag 1.1
+# tag 1.2
 add_library(libUSVMessage
 	crc16.c message_buf.c message_type.c)
 

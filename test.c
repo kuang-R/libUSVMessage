@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "usv_message.h"
 
-#define CHECK_TIME 1000000
+#define CHECK_TIME 10000000
 
 static void self();
 static void crc_check();
@@ -347,7 +347,7 @@ static void crc_check()
 	printf("Start crc check test.\n");
 	for (i = 0; i < CHECK_TIME; i++) {
 		j = (rand() % 50) + 1;
-		k = (rand() % 21);
+		k = (rand() % 20);
 
 		msg_speed_construct(buf+j, 1, rand() % 101, rand() % 101);
 		while ((t = (char)rand()) == buf[j+k])
