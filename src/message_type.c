@@ -268,11 +268,11 @@ int msg_ultrasonic_get(const struct Message *msg, struct Ultrasonic *ultra)
 	return 0;
 }
 
-unsigned msg_battery_construct(char *buf, uint16_t destination, float battery)
+unsigned msg_battery_construct(char *buf, uint16_t destination, float in_battery)
 {
 	struct Message msg;
 
-	*(float *)(msg.param) = battery;
+	*(float *)(msg.param) = in_battery;
 
 	msg_fill(&msg, MESSAGE_MIN_LEN+4, destination,
 			data, battery);
