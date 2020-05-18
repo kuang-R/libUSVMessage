@@ -32,11 +32,11 @@ int msg_speed_get(const struct Message *msg, int *lspeed, int *rspeed)
 	return 0;
 }
 
-unsigned msg_beep_construct(char *buf, uint16_t destination, int8_t beep)
+unsigned msg_beep_construct(char *buf, uint16_t destination, int8_t in_beep)
 {
 	struct Message msg;
 
-	*(int8_t *)(msg.param) = beep;
+	*(int8_t *)(msg.param) = in_beep;
 
 	msg_fill(&msg, MESSAGE_MIN_LEN+1, destination,
 			control, beep);
