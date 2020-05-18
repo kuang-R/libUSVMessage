@@ -298,6 +298,30 @@ unsigned msg_connect_construct(char *buf, uint16_t destination)
 	return msg.length;
 }
 
+unsigned msg_status_construct(char *buf, uint16_t destination, enum USVStatus status, uint8_t auto_return, uint8_t auto_avoid)
+{
+	struct Message msg;
+
+	*(uint8_t *)(msg.param) = status;
+	*(uint8_t *)(msg.param+1) = auto_return;
+	*(uint8_t *)(msg.param+2) = auto_avoid;
+
+	msg_fill(&msg, MESSAGE_MIN_LEN+3, destination,
+			data, connect);
+	msg_other_construct(buf, &msg);
+	return msg.length;
+}
+int msg_status_get(const struct Message *msg, enum USVStatus *status, int *auto_return, int *auto_avoid)
+{
+	if (msg->length != MESSAGE_MIN_LEN+4)
+		return -1;
+
+	*status = *(uint8_t *)(msg->param);
+	*auto_return = *(uint8_t *)(msg->param+1);
+	*auto_avoid = *(uint8_t *)(msg->param+2);
+
+	return 0;
+}
 
 static void msg_fill(struct Message *msg, int len, uint16_t destination,
 		enum MCategory category, enum MCommand command)

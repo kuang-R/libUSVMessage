@@ -91,6 +91,10 @@ struct Ultrasonic
     int32_t right;
 };
 
+enum USVStatus {
+	status_hover, status_motor_control, status_go_dest, status_cruise
+};
+
 /* 解析报文 */
 int msg_parsing(const char *buf, int buf_len, int *msg_start, int *msg_length);
 int msg_extract(const char *buf, int msg_length, struct Message *msg);
@@ -144,6 +148,11 @@ unsigned msg_battery_construct(char *buf, uint16_t destination, float battery);
 int msg_battery_get(const struct Message *msg, float *battery);
 /* connect */
 unsigned msg_connect_construct(char *buf, uint16_t destination);
+/* status */
+unsigned msg_status_construct(char *buf, uint16_t destination, enum USVStatus status,
+		uint8_t auto_return, uint8_t auto_avoid);
+int msg_status_get(const struct Message *msg, enum USVStatus *status,
+		int *auto_return, int *auto_avoid);
 
 #ifdef __cplusplus
 }

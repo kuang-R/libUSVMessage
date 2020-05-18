@@ -35,6 +35,7 @@ unsigned msg_imu_construct(char *buf, uint16_t destination, struct IMU imu);
 unsigned msg_ultrasonic_construct(char *buf, uint16_t destination,struct Ultrasonic ultra);
 unsigned msg_battery_construct(char *buf, uint16_t destination, float battery);
 unsigned msg_connect_construct(char *buf, uint16_t destination);
+unsigned msg_status_construct(char *buf, uint16_t destination, struct USVStatuc status, uint8_t auto_return, uint8_t auto_avoid);
 ```
 ### 解析报文接口
 包含两部分
@@ -79,6 +80,7 @@ int msg_gps_get(const struct Message *msg, struct GPS *gps);
 int msg_imu_get(const struct Message *msg, struct IMU *imu);
 int msg_ultrasonic_get(const struct Message *msg, struct Ultrasonic *ultra);
 int msg_battery_get(const struct Message *msg, float *battery);
+int msg_status_get(const struct Message *msg, enum USVStatuc, int *auto_return, int *auto_avoid);
 ```
 ### crc16
 使用压力测试，对21字节长的报文随机一个字节进行随机替换（非原字符）。
