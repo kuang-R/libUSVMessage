@@ -34,6 +34,7 @@ unsigned msg_gps_construct(char *buf, uint16_t destination, struct GPS gps);
 unsigned msg_imu_construct(char *buf, uint16_t destination, struct IMU imu);
 unsigned msg_ultrasonic_construct(char *buf, uint16_t destination,struct Ultrasonic ultra);
 unsigned msg_battery_construct(char *buf, uint16_t destination, float battery);
+unsigned msg_connect_construct(char *buf, uint16_t destination);
 ```
 ### 解析报文接口
 包含两部分

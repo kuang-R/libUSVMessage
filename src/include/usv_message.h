@@ -142,6 +142,8 @@ int msg_ultrasonic_get(const struct Message *msg, struct Ultrasonic *ultra);
 /* battery */
 unsigned msg_battery_construct(char *buf, uint16_t destination, float battery);
 int msg_battery_get(const struct Message *msg, float *battery);
+/* connect */
+unsigned msg_connect_construct(char *buf, uint16_t destination);
 
 #ifdef __cplusplus
 }

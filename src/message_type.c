@@ -288,6 +288,17 @@ int msg_battery_get(const struct Message *msg, float *battery)
 	return 0;
 }
 
+unsigned msg_connect_construct(char *buf, uint16_t destination)
+{
+	struct Message msg;
+
+	msg_fill(&msg, MESSAGE_MIN_LEN, destination,
+			data, connect);
+	msg_other_construct(buf, &msg);
+	return msg.length;
+}
+
+
 static void msg_fill(struct Message *msg, int len, uint16_t destination,
 		enum MCategory category, enum MCommand command)
 {
