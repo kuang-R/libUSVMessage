@@ -172,6 +172,16 @@ unsigned msg_hover_construct(char *buf, uint16_t destination)
 	return msg.length;
 }
 
+unsigned msg_background_construct(char *buf, uint16_t destination)
+{
+	struct Message msg;
+
+	msg_fill(&msg, MESSAGE_MIN_LEN, destination,
+			control, background);
+	msg_other_construct(buf, &msg);
+	return msg.length;
+}
+
 unsigned msg_feedback_construct(char *buf, uint16_t destination,
 		enum MCommand command, const struct Message *get_msg)
 {

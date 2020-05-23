@@ -27,6 +27,7 @@ unsigned msg_avoid_construct(char *buf, uint16_t destination, uint8_t status);
 unsigned msg_go_dest_construct(char *buf, uint16_t destination,float latitude, float longtitude);
 unsigned msg_cruise_construct(char *buf, uint16_t destination, int gps_num, struct GPS gps[]);
 unsigned msg_hover_construct(char *buf, uint16_t destination);
+unsigned msg_background_construct(char *buf, uint16_t destination);
 
 unsigned msg_feedback_construct(char *buf, uint16_t destination, enum MCommand command, const struct Message *get_msg);
 

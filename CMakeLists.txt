@@ -13,5 +13,5 @@ add_executable(test test.c)
 target_link_libraries(test PUBLIC libUSVMessage)
 
 include_directories(
-	"${PROJECT_SOURCE_DIR}/src/include"
+	"${PROJECT_SOURCE_DIR}/src"
 	)
