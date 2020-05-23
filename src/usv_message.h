@@ -45,6 +45,7 @@ enum MCommand
 	go_dest,
 	cruise,
 	hover,
+	background,
 	// return
 	succeed,
 	failure,
@@ -123,6 +124,8 @@ unsigned msg_cruise_construct(char *buf,
 int msg_cruise_get(const struct Message *msg, int *gps_num, struct GPS gps[]);
 /* hover */
 unsigned msg_hover_construct(char *buf, uint16_t destination);
+/* background */
+unsigned msg_background_construct(char *buf, uint16_t destination);
 
 /* return */
 unsigned msg_feedback_construct(char *buf, uint16_t destination,
