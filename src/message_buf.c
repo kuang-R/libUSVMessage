@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
-#include "include/usv_message.h"
+#include "usv_message.h"
 #include "checksum.h"
 
 static const char *msg_search(const char *buf, int ch, int buf_len);

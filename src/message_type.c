@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdint.h>
-#include "include/usv_message.h"
+#include "usv_message.h"
 #include "checksum.h"
 
 static volatile uint32_t serial = 0;
