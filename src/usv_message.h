@@ -48,10 +48,10 @@ enum MCommand
 	hover,
 	background,
 	// return
-	succeed,
+	succeed = 50,
 	failure,
 	// data-无返回报文
-	gps,
+	gps = 100,
 	imu,
 	ultrasonic,
 	battery,
