@@ -42,6 +42,7 @@ enum MCommand
 	beep,
 	auto_return,	// usv-host
 	auto_avoid,
+	auto_salvage,
 	go_dest,
 	cruise,
 	hover,
@@ -156,6 +157,9 @@ unsigned msg_status_construct(char *buf, uint16_t destination, enum USVStatus st
 		uint8_t auto_return, uint8_t auto_avoid);
 int msg_status_get(const struct Message *msg, enum USVStatus *status,
 		int *auto_return, int *auto_avoid);
+/* auto salvage */
+unsigned msg_auto_salvage_construct(char *buf, uint16_t destination, uint8_t status);
+int msg_auto_salvage_get(struct Message *msg, int *status);
 
 #ifdef __cplusplus
 }

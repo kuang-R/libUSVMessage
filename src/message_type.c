@@ -308,6 +308,25 @@ unsigned msg_connect_construct(char *buf, uint16_t destination)
 	return msg.length;
 }
 
+unsigned msg_auto_salvage_construct(char *buf, uint16_t destination, uint8_t status)
+{
+	struct Message msg;
+
+	msg.param[0] = status;
+	msg_fill(&msg, MESSAGE_MIN_LEN+1, destination,
+			control, auto_salvage);
+	msg_other_construct(buf, &msg);
+	return msg.length;
+}
+int msg_auto_salvage_get(struct Message *msg, int *status)
+{
+	if (msg->length != MESSAGE_MIN_LEN+1)
+		return -1;
+	
+	*status = msg->param[0];
+	return 0;
+}
+
 unsigned msg_status_construct(char *buf, uint16_t destination, enum USVStatus status, uint8_t auto_return, uint8_t auto_avoid)
 {
 	struct Message msg;
