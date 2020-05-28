@@ -150,7 +150,7 @@ unsigned msg_cruise_construct(char *buf,
 int msg_cruise_get(const struct Message *msg, int *gps_num, struct GPS gps[])
 {
 	int i;
-	
+
 	if ((msg->length - MESSAGE_MIN_LEN) % 8 != 0)
 		return -1;
 
@@ -172,14 +172,22 @@ unsigned msg_hover_construct(char *buf, uint16_t destination)
 	return msg.length;
 }
 
-unsigned msg_background_construct(char *buf, uint16_t destination)
+unsigned msg_background_construct(char *buf, uint16_t destination, int8_t flag)
 {
 	struct Message msg;
 
-	msg_fill(&msg, MESSAGE_MIN_LEN, destination,
+	*(int8_t *)(msg.param) = flag;
+	msg_fill(&msg, MESSAGE_MIN_LEN+1, destination,
 			control, background);
 	msg_other_construct(buf, &msg);
 	return msg.length;
+}
+int msg_background_get(const struct Message *msg, int8_t *flag)
+{
+	if (msg->length != MESSAGE_MIN_LEN+1)
+		return -1;
+	*flag = *(int8_t *)(msg->param);
+	return 0;
 }
 
 unsigned msg_feedback_construct(char *buf, uint16_t destination,
@@ -318,11 +326,11 @@ unsigned msg_auto_salvage_construct(char *buf, uint16_t destination, uint8_t sta
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_auto_salvage_get(struct Message *msg, int *status)
+int msg_auto_salvage_get(const struct Message *msg, int *status)
 {
 	if (msg->length != MESSAGE_MIN_LEN+1)
 		return -1;
-	
+
 	*status = msg->param[0];
 	return 0;
 }

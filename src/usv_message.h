@@ -130,7 +130,8 @@ int msg_cruise_get(const struct Message *msg, int *gps_num, struct GPS gps[]);
 /* hover */
 unsigned msg_hover_construct(char *buf, uint16_t destination);
 /* background */
-unsigned msg_background_construct(char *buf, uint16_t destination);
+unsigned msg_background_construct(char *buf, uint16_t destination, int8_t flag);
+int msg_background_get(const struct Message *msg, int8_t *flag);
 
 /* return */
 unsigned msg_feedback_construct(char *buf, uint16_t destination,
@@ -159,7 +160,7 @@ int msg_status_get(const struct Message *msg, enum USVStatus *status,
 		int *auto_return, int *auto_avoid);
 /* auto salvage */
 unsigned msg_auto_salvage_construct(char *buf, uint16_t destination, uint8_t status);
-int msg_auto_salvage_get(struct Message *msg, int *status);
+int msg_auto_salvage_get(const struct Message *msg, int *status);
 
 #ifdef __cplusplus
 }
