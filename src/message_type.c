@@ -182,7 +182,7 @@ unsigned msg_background_construct(char *buf, uint16_t destination, int8_t flag)
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
-int msg_background_get(const struct Message *msg, int8_t *flag)
+int msg_background_get(const struct Message *msg, int *flag)
 {
 	if (msg->length != MESSAGE_MIN_LEN+1)
 		return -1;

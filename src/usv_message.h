@@ -131,7 +131,7 @@ int msg_cruise_get(const struct Message *msg, int *gps_num, struct GPS gps[]);
 unsigned msg_hover_construct(char *buf, uint16_t destination);
 /* background */
 unsigned msg_background_construct(char *buf, uint16_t destination, int8_t flag);
-int msg_background_get(const struct Message *msg, int8_t *flag);
+int msg_background_get(const struct Message *msg, int *flag);
 
 /* return */
 unsigned msg_feedback_construct(char *buf, uint16_t destination,
