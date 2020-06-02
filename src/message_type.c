@@ -335,22 +335,22 @@ int msg_auto_salvage_get(const struct Message *msg, int *status)
 	return 0;
 }
 
-unsigned msg_status_construct(char *buf, uint16_t destination, enum USVStatus status, uint8_t auto_return, uint8_t auto_avoid)
+unsigned msg_status_construct(char *buf, uint16_t destination, enum USVStatus in_status, uint8_t auto_return, uint8_t auto_avoid)
 {
 	struct Message msg;
 
-	*(uint8_t *)(msg.param) = status;
+	*(uint8_t *)(msg.param) = in_status;
 	*(uint8_t *)(msg.param+1) = auto_return;
 	*(uint8_t *)(msg.param+2) = auto_avoid;
 
 	msg_fill(&msg, MESSAGE_MIN_LEN+3, destination,
-			data, connect);
+			data, status);
 	msg_other_construct(buf, &msg);
 	return msg.length;
 }
 int msg_status_get(const struct Message *msg, enum USVStatus *status, int *auto_return, int *auto_avoid)
 {
-	if (msg->length != MESSAGE_MIN_LEN+4)
+	if (msg->length != MESSAGE_MIN_LEN+3)
 		return -1;
 
 	*status = *(uint8_t *)(msg->param);
